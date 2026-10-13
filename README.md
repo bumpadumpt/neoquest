@@ -2,6 +2,16 @@
 
 > **Stop scrolling. Start exploring.**
 
+## Current prototype
+
+The repository now includes a small, working Next.js + React + TypeScript prototype with Tailwind CSS, Leaflet, and OpenStreetMap tiles. Open `/map` to explore 12 fictional activity ideas around Berkeley, filter by **Food, Sports, Outdoors, or Cafés**, and click markers or sidebar cards to read activity details. It works on desktop and mobile without API keys.
+
+All activity names and descriptions are sample ideas, and coordinates are illustrative. They are **not verified businesses, available venues, or real recommendations**. The roadmap below describes the longer-term vision; authentication, Firebase, Google APIs, and recommendation ranking are not implemented in this first prototype.
+
+See [Running and testing the prototype](docs/prototype.md) for preview commands and tile-provider guidance.
+
+**Try the hosted prototype:** [NeoQuest website](https://bumpadumpt.github.io/neoquest/) · [Interactive map](https://bumpadumpt.github.io/neoquest/map/). No local installation is needed.
+
 NeoQuest is a hangout discovery platform that helps friends find things to do nearby based on what they actually want to do.
 
 Instead of recommending only major attractions or the same highly rated destinations, NeoQuest focuses on spontaneous **side quests**: grabbing boba, finding a sunset spot, exploring a new neighborhood, playing basketball, studying at a café, or discovering something completely unexpected.
@@ -412,39 +422,38 @@ This structure is provisional and may change as development progresses.
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/bumpadumpt/neoquest.git
 cd neoquest
 ```
 
 ### 2. Install dependencies
 
+Use **Node.js 22 or newer** and npm. The lockfile pins dependencies.
+
 ```bash
-npm install
+npm ci
 ```
 
-### 3. Configure environment variables
+### 3. Start the development server
 
-Create a `.env.local` file.
-
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=
-
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
-```
-
-**Never commit API keys or secrets to GitHub.**
-
-A `.env.example` file should contain the required variable names without real credentials.
-
-### 4. Start the development server
+No environment variables or API keys are required for this prototype.
 
 ```bash
 npm run dev
 ```
 
-Then open the local development URL shown in your terminal.
+Open `http://localhost:3000/map` in your browser. Internet access to `tile.openstreetmap.org` is needed for the basemap; sample data, markers, and filters are local.
+
+### 4. Check the production build
+
+```bash
+npm run typecheck
+npm run lint
+npm run build
+npm start
+```
+
+Browser test instructions are in [docs/prototype.md](docs/prototype.md).
 
 ---
 
