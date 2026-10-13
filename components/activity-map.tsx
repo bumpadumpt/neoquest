@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
-import { BERKELEY_CENTER, categories, type Activity } from "@/lib/activities";
+import { categories, type Activity } from "@/lib/activities";
+import type { SearchCenter } from "@/lib/discovery";
 import "leaflet/dist/leaflet.css";
+import { PlaceInfo } from "./place-info";
 
 const icons = Object.fromEntries(
   categories.map((category) => [
@@ -56,22 +58,24 @@ function ActivityMarker({
             SAMPLE ACTIVITY · {category.label.toUpperCase()}
           </span>
           <h2>{activity.name}</h2>
-          <p>{activity.description}</p>
-          <span className="popup-area">{activity.area}</span>
-          <p className="popup-disclaimer">
-            Illustrative location. Not a verified venue.
-          </p>
+          <PlaceInfo activity={activity} />
         </article>
       </Popup>
     </Marker>
   );
 }
 
-function Recenter({ resetKey }: { resetKey: number }) {
+function Recenter({
+  resetKey,
+  center,
+}: {
+  resetKey: number;
+  center: SearchCenter;
+}) {
   const map = useMap();
   useEffect(() => {
-    if (resetKey > 0) map.setView(BERKELEY_CENTER, 14);
-  }, [map, resetKey]);
+    map.setView([center.lat, center.lng], 14);
+  }, [map, resetKey, center]);
   return null;
 }
 
@@ -80,24 +84,26 @@ export default function ActivityMap({
   selection,
   onSelect,
   resetKey,
+  center,
 }: {
   activities: Activity[];
   selection: { id: string } | null;
   onSelect: (id: string) => void;
   resetKey: number;
+  center: SearchCenter;
 }) {
   const [tileError, setTileError] = useState(false);
   return (
     <>
       <MapContainer
-        center={BERKELEY_CENTER}
+        center={[center.lat, center.lng]}
         zoom={14}
         minZoom={11}
         maxZoom={18}
         scrollWheelZoom={false}
         fadeAnimation={false}
         className="leaflet-map"
-        aria-label="Berkeley sample activity map"
+        aria-label="Sample activity map"
       >
         <TileLayer
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -107,7 +113,7 @@ export default function ActivityMap({
           updateWhenIdle
           eventHandlers={{ tileerror: () => setTileError(true) }}
         />
-        <Recenter resetKey={resetKey} />
+        <Recenter resetKey={resetKey} center={center} />
         {activities.map((activity) => (
           <ActivityMarker
             key={activity.id}

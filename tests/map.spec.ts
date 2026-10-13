@@ -34,8 +34,10 @@ test("category filters update the list and map together", async ({ page }) => {
   for (const [category, count] of [
     ["Food", 3],
     ["Sports", 2],
-    ["Outdoors", 4],
-    ["Cafés", 3],
+    ["Outdoors", 2],
+    ["Cafés", 2],
+    ["Boba", 1],
+    ["Parks", 2],
   ] as const) {
     await page
       .locator(".category-filters")
@@ -61,7 +63,7 @@ test("markers and sidebar selections show descriptions and category", async ({
     "Boba & a little catch-up",
   );
   await expect(page.locator(".popup-label")).toHaveText(
-    "SAMPLE ACTIVITY · CAFÉS",
+    "SAMPLE ACTIVITY · BOBA",
   );
   await expect(page.locator(".activity-popup")).toContainText(
     "Try a new milk-tea flavor",
@@ -77,7 +79,9 @@ test("markers and sidebar selections show descriptions and category", async ({
   await expect(page.locator(".activity-popup h2")).toHaveText(
     "Golden-hour hoops",
   );
-  await page.getByRole("button", { name: "Recenter on Berkeley" }).click();
+  await page
+    .getByRole("button", { name: "Recenter on search location" })
+    .click();
   await expect(page.locator(".activity-popup")).toHaveCount(0);
   expect(errors).toEqual([]);
   expect(

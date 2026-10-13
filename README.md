@@ -4,13 +4,15 @@
 
 ## Current prototype
 
-The repository now includes a small, working Next.js + React + TypeScript prototype with Tailwind CSS, Leaflet, and OpenStreetMap tiles. Open `/map` to explore 12 fictional activity ideas around Berkeley, filter by **Food, Sports, Outdoors, or Cafés**, and click markers or sidebar cards to read activity details. It works on desktop and mobile without API keys.
+The repository includes a Next.js + React + TypeScript app with Tailwind CSS and **Side Quest Discovery** at `/map`. The default demo uses Leaflet/OpenStreetMap and 12 fictional Berkeley activities without API keys. Filter by **Food, Cafés, Boba, Sports, Parks, or Outdoors**, or choose real places and discover nearby activities using your current location or a manually entered city/address.
 
-All activity names and descriptions are sample ideas, and coordinates are illustrative. They are **not verified businesses, available venues, or real recommendations**. The roadmap below describes the longer-term vision; authentication, Firebase, Google APIs, and recommendation ranking are not implemented in this first prototype.
+Demo activities and coordinates are illustrative, not verified businesses. Optional live discovery uses **Google Places API (New) through a server-only Next.js route**. Names, addresses, and available ratings come from the provider; prices and opening hours are not invented. Live results use a Google map to follow Google’s display policy, while the Leaflet demo remains intact. Authentication, Firebase, and machine learning are not implemented.
 
 See [Running and testing the prototype](docs/prototype.md) for preview commands and tile-provider guidance.
 
-**Try the hosted prototype:** [NeoQuest website](https://bumpadumpt.github.io/neoquest/) · [Interactive map](https://bumpadumpt.github.io/neoquest/map/). No local installation is needed.
+See [Side Quest Discovery setup](docs/discovery.md) for the two-key Google configuration, request-cost controls, and server deployment instructions. Live discovery is optional and requires a server; GitHub Pages supports the demo only.
+
+**Try the hosted demo:** [NeoQuest website](https://bumpadumpt.github.io/neoquest/) · [Interactive map](https://bumpadumpt.github.io/neoquest/map/). This published static snapshot updates separately from the source repository and does not run live discovery.
 
 NeoQuest is a hangout discovery platform that helps friends find things to do nearby based on what they actually want to do.
 
@@ -428,7 +430,7 @@ cd neoquest
 
 ### 2. Install dependencies
 
-Use **Node.js 22 or newer** and npm. The lockfile pins dependencies.
+Use **Node.js 24 LTS** (or Node 22.19+) and npm. The lockfile pins dependencies.
 
 ```bash
 npm ci
@@ -436,7 +438,7 @@ npm ci
 
 ### 3. Start the development server
 
-No environment variables or API keys are required for this prototype.
+No environment variables or API keys are required for demo mode. Optional live search configuration is documented in [docs/discovery.md](docs/discovery.md).
 
 ```bash
 npm run dev

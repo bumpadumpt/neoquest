@@ -1,4 +1,10 @@
-export type Category = "food" | "sports" | "outdoors" | "cafe";
+export type Category =
+  | "food"
+  | "sports"
+  | "outdoors"
+  | "cafe"
+  | "boba"
+  | "park";
 export type Activity = {
   id: string;
   name: string;
@@ -6,6 +12,11 @@ export type Activity = {
   description: string;
   area: string;
   position: [number, number];
+  source?: "demo" | "google";
+  address?: string;
+  rating?: number;
+  mapsUrl?: string;
+  attributions?: { displayName: string; uri?: string }[];
 };
 
 export const BERKELEY_CENTER: [number, number] = [37.8716, -122.2727];
@@ -19,6 +30,8 @@ export const categories: {
   { id: "sports", label: "Sports", emoji: "🏀", color: "#b7d0df" },
   { id: "outdoors", label: "Outdoors", emoji: "🌿", color: "#bdd4a8" },
   { id: "cafe", label: "Cafés", emoji: "☕", color: "#d6c2df" },
+  { id: "boba", label: "Boba", emoji: "🧋", color: "#d7b2cf" },
+  { id: "park", label: "Parks", emoji: "🌳", color: "#accbba" },
 ];
 
 // Fictional activities near real Berkeley neighborhoods, not verified businesses.
@@ -27,7 +40,7 @@ export const sampleActivities: Activity[] = [
   {
     id: "boba",
     name: "Boba & a little catch-up",
-    category: "cafe",
+    category: "boba",
     description:
       "Try a new milk-tea flavor and catch up with your friends. An idea for a relaxed afternoon tea stop.",
     area: "Downtown Berkeley",
@@ -36,7 +49,7 @@ export const sampleActivities: Activity[] = [
   {
     id: "picnic",
     name: "Cedar Street picnic",
-    category: "outdoors",
+    category: "park",
     description:
       "Pack a blanket, sandwiches, and a card game for a casual neighborhood picnic. Scout a suitable public spot first.",
     area: "North Berkeley",
@@ -126,7 +139,7 @@ export const sampleActivities: Activity[] = [
   {
     id: "walk",
     name: "A slow morning park walk",
-    category: "outdoors",
+    category: "park",
     description:
       "Stretch your legs and trade weekend stories on an easy neighborhood walk. An illustrative outdoor activity near a public park.",
     area: "Near Ohlone Park",
