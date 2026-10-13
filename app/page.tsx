@@ -56,7 +56,9 @@ export default function Home() {
             <h2>A small prototype. A world of possibilities.</h2>
             <p>
               Explore 12 fictional activity ideas around Berkeley. Filter by
-              Food, Sports, Outdoors, or Cafés, then pick a pin to learn more.
+              Food, Sports, Outdoors, Cafés, Boba, or Parks, then pick a pin to
+              learn more. Optional live discovery finds real nearby places when
+              configured.
             </p>
           </div>
         </section>
