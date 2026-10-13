@@ -4,6 +4,22 @@ This first prototype focuses on a working map. It contains a home page and a Ber
 
 ## Local preview
 
+### Hosted website preview
+
+The prototype is published at **[bumpadumpt.github.io/neoquest/](https://bumpadumpt.github.io/neoquest/)**. Open **[the interactive map](https://bumpadumpt.github.io/neoquest/map/)** directly; no local server or installation is required.
+
+GitHub Pages publishes generated website files from the `gh-pages` branch. Source changes stay on `feature/neoquest-map-prototype`, and its pull request remains unmerged. Hosting is configured at [Repository Pages settings](https://github.com/bumpadumpt/neoquest/settings/pages) using **Deploy from a branch**, **gh-pages**, and **/ (root)**.
+
+To generate an updated static build from the source branch:
+
+```bash
+NEOQUEST_GITHUB_PAGES=true npm run build
+```
+
+The build outputs `out/` with the `/neoquest` base path and directory-style routes required by GitHub Pages. Deploy its contents, including a `.nojekyll` file, to `gh-pages` when updating the hosted preview. Ordinary `npm run dev` and `npm run build` still use the standard local paths.
+
+### Run on your computer
+
 Use Node.js 22+ and npm:
 
 ```bash
@@ -17,6 +33,8 @@ npm run dev
 Open `http://localhost:3000` for the home page or `http://localhost:3000/map` for the prototype. No `.env` file or API key is needed. To preview another checked-out branch, simply use that branch's files.
 
 The development server listens on `0.0.0.0`. In a remote workspace with port forwarding, forward port 3000 and use the URL provided by your workspace. Codex cloud onboarding has no browser preview for its loopback addresses; running the repository locally is the simplest way to preview it there.
+
+Opening `localhost:3000` on your computer reaches your computer, not the Codex cloud machine. Start the app on your computer first, or use the hosted preview after enabling Pages.
 
 For a production preview:
 

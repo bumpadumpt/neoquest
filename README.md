@@ -10,6 +10,8 @@ All activity names and descriptions are sample ideas, and coordinates are illust
 
 See [Running and testing the prototype](docs/prototype.md) for preview commands and tile-provider guidance.
 
+**Try the hosted prototype:** [NeoQuest website](https://bumpadumpt.github.io/neoquest/) · [Interactive map](https://bumpadumpt.github.io/neoquest/map/). No local installation is needed.
+
 NeoQuest is a hangout discovery platform that helps friends find things to do nearby based on what they actually want to do.
 
 Instead of recommending only major attractions or the same highly rated destinations, NeoQuest focuses on spontaneous **side quests**: grabbing boba, finding a sunset spot, exploring a new neighborhood, playing basketball, studying at a café, or discovering something completely unexpected.
