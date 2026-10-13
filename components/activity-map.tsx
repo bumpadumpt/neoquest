@@ -76,6 +76,12 @@ function Recenter({
   useEffect(() => {
     map.setView([center.lat, center.lng], 14);
   }, [map, resetKey, center]);
+  useEffect(() => {
+    // The embed can be resized by Figma or by hiding its search toolbar.
+    const observer = new ResizeObserver(() => map.invalidateSize({ pan: false }));
+    observer.observe(map.getContainer());
+    return () => observer.disconnect();
+  }, [map]);
   return null;
 }
 

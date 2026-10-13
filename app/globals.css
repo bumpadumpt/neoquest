@@ -1133,6 +1133,93 @@ svg {
 .place-attribution {
   font-size: 8px;
 }
+
+/* Standalone iframe layout; these rules do not change the full /map page. */
+.map-embed {
+  --embed-surface: #fbfaf5;
+  --embed-text: #294434;
+  --embed-line: #d9dece;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 360px;
+  background: var(--embed-surface);
+  color: var(--embed-text);
+}
+.map-embed.embed-dark {
+  --embed-surface: #202b26;
+  --embed-text: #f2f4ed;
+  --embed-line: #536459;
+  color-scheme: dark;
+}
+.embed-controls {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--embed-line);
+}
+.embed-mode { display: flex; gap: 6px; margin-bottom: 10px; }
+.embed-mode button, .embed-map-actions button {
+  border: 1px solid var(--embed-line);
+  border-radius: 7px;
+  padding: 8px 11px;
+  background: var(--embed-surface);
+  color: var(--embed-text);
+  font-size: 12px;
+}
+.embed-mode button[aria-pressed="true"], .map-embed .embed-discover {
+  background: var(--embed-accent);
+  color: var(--embed-on-accent);
+}
+.embed-controls form { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; }
+.embed-controls label { display: grid; gap: 4px; font-size: 11px; }
+.embed-location { flex: 1 1 200px; }
+.embed-controls input, .embed-controls select {
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  border: 1px solid var(--embed-line);
+  border-radius: 7px;
+  padding: 6px 9px;
+  color: var(--embed-text);
+  background: var(--embed-surface);
+  font: inherit;
+  font-size: 14px;
+}
+.embed-controls input:focus-visible, .embed-controls select:focus-visible {
+  outline: 2px solid var(--embed-accent);
+  outline-offset: 2px;
+}
+.embed-controls > p { margin-top: 8px; font-size: 11px; }
+.map-embed button:disabled { cursor: default; opacity: 0.55; }
+.embed-location-button { display: grid; place-items: center; height: 38px; width: 38px; border-radius: 7px; background: var(--embed-surface); border: 1px solid var(--embed-line); }
+.embed-discover { border-radius: 7px; padding: 11px 14px; font-size: 12px; font-weight: 600; }
+.embed-error { padding: 10px 16px; background: #fff4e3; color: #775125; font-size: 12px; flex-shrink: 0; }
+.embed-error button { margin-top: 5px; text-decoration: underline; background: transparent; }
+.map-embed .embed-map { flex: 1; min-height: 0; overflow: hidden; order: 0; }
+.embed-placeholder { padding: 70px 20px 20px; text-align: center; }
+.embed-map-actions {
+  position: absolute; top: 12px; right: 12px; z-index: 600;
+  display: flex; flex-wrap: wrap; justify-content: end; gap: 6px; max-width: calc(100% - 70px);
+}
+.embed-map-actions button { display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px #00000018; }
+.embed-refresh { position: absolute; bottom: 36px; right: 12px; z-index: 500; }
+.embed-status {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px;
+  padding: 8px 12px; border-top: 1px solid var(--embed-line); font-size: 10px; flex-shrink: 0;
+}
+.map-embed .google-place-detail { bottom: 35px; max-height: calc(100% - 105px); color: #294434; color-scheme: light; }
+.map-embed .leaflet-popup-content-wrapper { color: #294434; color-scheme: light; }
+.map-embed .tile-error { top: 65px; left: 12px; right: 12px; }
+@media (max-width: 650px) {
+  .embed-controls { padding: 10px; }
+  .embed-controls form { gap: 8px; }
+  .embed-location { flex-basis: 100%; }
+  .embed-controls input, .embed-controls select { font-size: 16px; }
+  .embed-controls label:not(.embed-location) { flex: 1; }
+  .embed-controls .embed-discover { width: 100%; }
+  .embed-map-actions button span { display: none; }
+  .embed-status { font-size: 9px; }
+}
 .place-link {
   text-decoration: underline;
 }
