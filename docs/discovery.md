@@ -31,6 +31,16 @@ Live discovery requires a **Next.js server or serverless Next.js host**, such as
 
 `NEOQUEST_GITHUB_PAGES=true npm run build` still produces a key-free demo export. The real-place button is disabled in that export. Neither merging source changes nor saving the Codex environment automatically republishes the static demo or deploys a Next.js server.
 
+### Deploy your GitHub repository on Vercel
+
+1. Review [PR #2](https://github.com/bumpadumpt/neoquest/pull/2) and merge it yourself when ready. Until it is merged, the Google feature is on `feature/side-quest-discovery`, rather than `main`.
+2. Open [Vercel's new-project page](https://vercel.com/new), connect your GitHub account, and import **bumpadumpt/neoquest**. Use the **Next.js** framework preset, the repository root, and the default build/output settings. Do not set `NEOQUEST_GITHUB_PAGES=true`.
+3. In Vercel's project environment settings, privately add **both** `GOOGLE_PLACES_API_KEY` and `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` before building. Use the original keys from Google Cloud; Codex's network-secret binding is specific to Codex and is not transferred to Vercel. Do not copy proxy placeholders or commit key values. If you add or change variables after deployment, redeploy so the browser key is rebuilt.
+4. In Google Cloud, edit the browser key's website restrictions to allow your actual Vercel URL, for example `https://your-project.vercel.app/*`. Add each preview/custom domain you intend to use. Keep its API restriction limited to Maps JavaScript API. Keep the server key limited to Places API (New); use IP application restrictions only if your host provides a fixed outbound IP. Configure low Google quotas before opening discovery to visitors.
+5. Open `/map` on the deployed URL. Confirm demo mode loads, then select **Real places**, choose **Cafés** and **1 km**, and press **Discover Side Quests** once. Check the sidebar, click a pin, and verify its available address/rating. Changing category filters alone should not send a new discovery request. Check Google Cloud's usage dashboard after this small test.
+
+Vercel supplies the public website URL and executes the server endpoint. Publishing the Codex environment and merging GitHub code do not create a Vercel deployment. Keep PR previews separate from production if you connect Vercel before merging; add the preview URL to the browser-key restrictions and configure variables for the Preview environment as well.
+
 ## Request and cost controls
 
 - Google requests run server-side. The client sends only a location or coordinates, category, and radius. It never receives the Places secret.
@@ -54,4 +64,4 @@ npx playwright install chromium
 npm test
 ```
 
-If Chromium is already installed, run `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm test`. Tests use synthetic fixtures for Places and Google Maps; no genuine keys or paid requests are needed. Real Google credentials were absent during implementation, so live API authorization, billing, and actual Maps SDK rendering still need a manual check after configuration. Demo rendering, the live UI flow with fixtures, input validation, errors, API request shapes, and server-key separation are tested.
+If Chromium is already installed, run `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm test`. Tests use synthetic fixtures for Places and Google Maps; no genuine keys or paid requests are needed. After credentials were configured, one live server-side Nearby Search for cafés within 1 km of Berkeley returned 20 Google places with addresses and available ratings. The app was rebuilt with the separate browser key, and the Places credential was absent from public build artifacts. Actual Maps SDK rendering and website-referrer authorization still require verification on the intended deployment domain. Demo rendering, the live UI flow with fixtures, input validation, errors, API request shapes, and server-key separation are tested.
