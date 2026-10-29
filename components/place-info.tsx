@@ -36,6 +36,11 @@ export function PlaceInfo({ activity }: { activity: Activity }) {
             Details from Google Places. Availability is not verified.
           </p>
         </>
+      ) : activity.source === "osm" ? (
+        <>
+          <a className="place-link" href={activity.mapsUrl} target="_blank" rel="noopener noreferrer">View on OpenStreetMap ↗</a>
+          <p className="popup-disclaimer">Data © OpenStreetMap contributors · Community mapped; details and access may be incomplete or outdated.</p>
+        </>
       ) : (
         <p className="popup-disclaimer">
           Illustrative location. Not a verified venue.

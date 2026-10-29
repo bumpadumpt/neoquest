@@ -48,14 +48,14 @@ function ActivityMarker({
       ref={marker}
       position={activity.position}
       icon={icons[activity.category]}
-      title={`Sample: ${activity.name}`}
+      title={`${activity.source === "osm" ? "OpenStreetMap" : "Sample"}: ${activity.name}`}
       alt={`Show ${activity.name}`}
       eventHandlers={{ click: () => onSelect(activity.id) }}
     >
       <Popup>
         <article className="activity-popup">
           <span className="popup-label">
-            SAMPLE ACTIVITY · {category.label.toUpperCase()}
+            {activity.source === "osm" ? "OPENSTREETMAP PLACE" : "SAMPLE ACTIVITY"} · {category.label.toUpperCase()}
           </span>
           <h2>{activity.name}</h2>
           <PlaceInfo activity={activity} />
@@ -109,7 +109,7 @@ export default function ActivityMap({
         scrollWheelZoom={false}
         fadeAnimation={false}
         className="leaflet-map"
-        aria-label="Sample activity map"
+        aria-label={activities.some((a) => a.source === "osm") ? "OpenStreetMap activity map" : "Sample activity map"}
       >
         <TileLayer
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"

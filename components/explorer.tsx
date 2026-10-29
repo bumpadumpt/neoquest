@@ -33,21 +33,26 @@ const GoogleActivityMap = dynamic(() => import("./google-activity-map"), {
 
 export function Explorer({
   liveSupported = true,
+  provider = "google",
 }: {
   liveSupported?: boolean;
+  provider?: "google" | "osm";
 }) {
   const {
     mode, category, selection, resetKey, location, radius, center, locationLabel,
     activities, liveResults, searched, busy, locating, error, onSelect,
     chooseMode, chooseCategory, useCurrentLocation, discover, cancelSearch,
     setLocation, setRadius, setSelection, setResetKey,
-  } = useActivityDiscovery();
+  } = useActivityDiscovery({ provider, mode: provider === "osm" ? "live" : "demo" });
   return (
     <div className="explorer">
       <header className="explorer-header">
         <Brand />
         <Link href="/" className="back-link">
           <ArrowLeft size={15} /> Back home
+        </Link>
+        <Link href={provider === "osm" ? "/map" : "/map/open"} className="back-link">
+          {provider === "osm" ? "Google finder" : "OpenStreetMap finder"}
         </Link>
         <span className="prototype-tag">SIDE QUEST DISCOVERY</span>
       </header>
@@ -85,9 +90,8 @@ export function Explorer({
               </>
             ) : (
               <>
-                <strong>Real places from Google Places.</strong> Ratings are
-                shown only when provided. Check availability directly with the
-                venue.
+                <strong>{provider === "osm" ? "Real places from OpenStreetMap." : "Real places from Google Places."}</strong>{" "}
+                {provider === "osm" ? "Community-mapped places; coverage varies. No ratings or reviews. Check access before visiting." : "Ratings are shown only when provided. Check availability directly with the venue."}
               </>
             )}
           </p>
@@ -165,7 +169,7 @@ export function Explorer({
                   <option value={1000}>1 km</option>
                   <option value={3000}>3 km</option>
                   <option value={5000}>5 km</option>
-                  <option value={10000}>10 km</option>
+                  {provider !== "osm" && <option value={10000}>10 km</option>}
                 </select>
                 <button
                   type="submit"
@@ -252,14 +256,14 @@ export function Explorer({
                     <span className="activity-copy">
                       <span className="activity-category">
                         {c.label} ·{" "}
-                        {mode === "demo" ? "Sample" : "Google place"}
+                        {mode === "demo" ? "Sample" : provider === "osm" ? "OSM place" : "Google place"}
                       </span>
                       <strong>{activity.name}</strong>
                       <span className="activity-area">
                         <MapPin size={10} />
                         {activity.address ?? activity.area}
                       </span>
-                      {mode === "live" && (
+                      {mode === "live" && provider !== "osm" && (
                         <span className="card-rating">
                           {activity.rating === undefined
                             ? "Rating not provided"
@@ -279,7 +283,7 @@ export function Explorer({
             </p>
           </aside>
           <section className="map-pane" aria-label="Interactive map">
-            {mode === "demo" ? (
+            {mode === "demo" || provider === "osm" ? (
               <ActivityMap
                 activities={activities}
                 selection={selection}
@@ -330,7 +334,7 @@ export function Explorer({
         <span>
           {mode === "demo"
             ? "Sample data · No API keys needed"
-            : "Places from Google · Searches run only when requested"}
+            : provider === "osm" ? "Data © OpenStreetMap contributors · No Google APIs" : "Places from Google · Searches run only when requested"}
         </span>
       </footer>
     </div>
