@@ -43,7 +43,7 @@ export function Explorer({
     activities, liveResults, searched, busy, locating, error, onSelect,
     chooseMode, chooseCategory, useCurrentLocation, discover, cancelSearch,
     setLocation, setRadius, setSelection, setResetKey,
-  } = useActivityDiscovery({ provider, mode: provider === "osm" ? "live" : "demo" });
+  } = useActivityDiscovery({ provider, mode: provider === "osm" ? "live" : "demo", radius: provider === "osm" ? 1000 : 5000 });
   return (
     <div className="explorer">
       <header className="explorer-header">
