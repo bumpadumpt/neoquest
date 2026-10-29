@@ -6,6 +6,7 @@ test("real OSM discovery uses Leaflet pins and no Google services", async ({ pag
   await page.route("https://tile.openstreetmap.org/**", (r) => r.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"/>' }));
   await page.route("**/api/discover/osm", (r) => { calls++; return r.fulfill({ json: { center: { lat: 37.8716, lng: -122.2727 }, locationLabel: "Berkeley", activities: [{ id: "osm-node-1", name: "Synthetic mapped café", category: "cafe", source: "osm", description: "Mapped café test fixture", area: "Address not mapped", position: [37.872, -122.273], mapsUrl: "https://www.openstreetmap.org/node/1" }] } }); });
   await page.goto("/map/open");
+  await expect(page.getByLabel("Search distance")).toHaveValue("1000");
   expect(calls).toBe(0);
   await page.getByRole("button", { name: "Real places", exact: true }).click();
   await page.getByRole("button", { name: "Discover Side Quests" }).click();

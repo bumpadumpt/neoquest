@@ -35,7 +35,17 @@ async function request(url: URL, body?: URLSearchParams) {
     const response = await fetch(url, { dispatcher, headers: { ...headers, ...(body ? { "Content-Type": "application/x-www-form-urlencoded" } : {}) }, method: body ? "POST" : "GET", body: body?.toString(), signal: AbortSignal.timeout(20000) });
     if (!response.ok) {
       await response.body?.cancel();
-      throw new DiscoveryError(response.status === 429 ? "The community search service is busy. Wait a minute and try again." : "OpenStreetMap discovery is temporarily unavailable. Try demo mode.", response.status === 429 ? 429 : 502);
+      const service = body ? "OpenStreetMap search" : "Location search";
+      // Log only provider/status; never log a location, query body, or upstream text.
+      console.warn("Community discovery request failed", { service, status: response.status });
+      const advice = response.status === 429
+        ? "The service is busy. Wait a minute before trying again."
+        : [502, 503, 504].includes(response.status)
+          ? "The service is busy or could not finish. Try one category within 1 km later."
+          : response.status === 403
+            ? "The provider refused this server's request. Try demo mode while the hosting configuration is checked."
+            : "The provider could not accept this search. Try demo mode while the request is checked.";
+      throw new DiscoveryError(`${service} failed (HTTP ${response.status}). ${advice}`, response.status === 429 ? 429 : 502);
     }
     return await response.json() as Record<string, unknown>;
   } catch (error) {
@@ -69,7 +79,7 @@ export function normalizeOsm(element: Element): Activity | null {
 }
 export function overpassQuery(center: SearchCenter, radius: number, category: Category | "all") {
   const chosen = category === "all" ? Object.values(selectors).flat() : selectors[category];
-  return `[out:json][timeout:15][maxsize:8388608];(${chosen.map((s) => `nwr(around:${Math.min(radius, 5000)},${center.lat},${center.lng})${s};`).join("")});out body center 80;`;
+  return `[out:json][timeout:15][maxsize:67108864];(${chosen.map((s) => `nwr(around:${Math.min(radius, 5000)},${center.lat},${center.lng})${s};`).join("")});out body center 80;`;
 }
 async function search(input: DiscoveryRequest): Promise<Result> {
   let center = input.center;

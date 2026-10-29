@@ -1,10 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const { upstream } = vi.hoisted(() => ({ upstream: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("undici", () => ({ fetch: upstream, EnvHttpProxyAgent: class {} }));
 const center = { lat: 37.8716, lng: -122.2727 };
 const element = { type: "node" as const, id: 1, lat: 37.872, lon: -122.273, tags: { name: "Synthetic Café", amenity: "cafe", "addr:street": "Fixture Street" } };
 beforeEach(() => { vi.resetModules(); upstream.mockReset(); });
+afterEach(() => { vi.restoreAllMocks(); });
 
 describe("OpenStreetMap discovery", () => {
   it("searches with no key, normalizes nodes and centers, caches repeat searches, and keeps missing fields honest", async () => {
@@ -58,5 +59,18 @@ describe("OpenStreetMap discovery", () => {
     const result = await discoverOsm({ location: "Test City", category: "all", radius: 1000 });
     expect(String(upstream.mock.calls[0][0])).toContain("photon.komoot.io/api/?q=Test+City&limit=1");
     expect(result.center).toEqual(center);
+  });
+  it.each([400, 403, 429, 502, 503, 504])("reports provider HTTP %i without forwarding private upstream text", async (status) => {
+    const log = vi.spyOn(console, "warn").mockImplementation(() => {});
+    upstream.mockResolvedValue(new Response("Private upstream query and location", { status }));
+    const { discoverOsm } = await import("@/lib/server/osm");
+    const error = await discoverOsm({ center, category: "all", radius: 1000 }).catch((e) => e);
+    expect(error.message).toContain(`OpenStreetMap search failed (HTTP ${status})`);
+    expect(error.message).not.toContain("Private upstream");
+    expect(log).toHaveBeenCalledWith("Community discovery request failed", { service: "OpenStreetMap search", status });
+  });
+  it("gives dense queries a bounded realistic memory budget", async () => {
+    const { overpassQuery } = await import("@/lib/server/osm");
+    expect(overpassQuery(center, 1000, "all")).toContain("[maxsize:67108864]");
   });
 });
