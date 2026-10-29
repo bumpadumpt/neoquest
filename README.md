@@ -14,6 +14,8 @@ See [Side Quest Discovery setup](docs/discovery.md) for the two-key Google confi
 
 Use `/map/embed` for a map-only Figma Sites embed with URL-configurable category, location, distance, controls, theme, and accent color. See [Map embed setup](docs/map-embed.md). Live searches require an explicit click; the original `/map` page remains available.
 
+Use `/map/options` for the screenshot-inspired Activity Options card list and map with subject/category pins. See [Activity Options setup](docs/activity-options.md).
+
 **Try the hosted demo:** [NeoQuest website](https://bumpadumpt.github.io/neoquest/) · [Interactive map](https://bumpadumpt.github.io/neoquest/map/). This published static snapshot updates separately from the source repository and does not run live discovery.
 
 NeoQuest is a hangout discovery platform that helps friends find things to do nearby based on what they actually want to do.
