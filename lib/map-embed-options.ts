@@ -1,7 +1,7 @@
 import { categories } from "./activities";
 import type { DiscoveryDefaults } from "./use-activity-discovery";
 
-export type MapEmbedOptions = Required<DiscoveryDefaults> & {
+export type MapEmbedOptions = Required<Omit<DiscoveryDefaults, "provider">> & {
   controls: boolean;
   theme: "light" | "dark";
   accent: string;

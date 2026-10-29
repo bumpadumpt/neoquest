@@ -4,6 +4,8 @@
 
 ## Current prototype
 
+**No-Google real-place discovery:** `/map/open` finds community-mapped activities using Overpass/OpenStreetMap and displays them on Leaflet, with no API keys. See [OpenStreetMap discovery](docs/openstreetmap-discovery.md) for coverage, provider limits, and deployment details.
+
 The repository includes a Next.js + React + TypeScript app with Tailwind CSS and **Side Quest Discovery** at `/map`. The default demo uses Leaflet/OpenStreetMap and 12 fictional Berkeley activities without API keys. Filter by **Food, Cafés, Boba, Sports, Parks, or Outdoors**, or choose real places and discover nearby activities using your current location or a manually entered city/address.
 
 Demo activities and coordinates are illustrative, not verified businesses. Optional live discovery uses **Google Places API (New) through a server-only Next.js route**. Names, addresses, and available ratings come from the provider; prices and opening hours are not invented. Live results use a Google map to follow Google’s display policy, while the Leaflet demo remains intact. Authentication, Firebase, and machine learning are not implemented.

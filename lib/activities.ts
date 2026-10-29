@@ -12,7 +12,7 @@ export type Activity = {
   description: string;
   area: string;
   position: [number, number];
-  source?: "demo" | "google";
+  source?: "demo" | "google" | "osm";
   address?: string;
   rating?: number;
   mapsUrl?: string;

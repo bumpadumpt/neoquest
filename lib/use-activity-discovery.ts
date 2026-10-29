@@ -11,6 +11,7 @@ import {
 import { distanceMeters, type SearchCenter } from "@/lib/discovery";
 
 export type DiscoveryDefaults = {
+  provider?: "google" | "osm";
   mode?: "demo" | "live";
   category?: Category | "all";
   location?: string;
@@ -144,7 +145,7 @@ export function useActivityDiscovery(initial: DiscoveryDefaults = {}) {
       setResetKey((k) => k + 1);
       return;
     }
-    if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && !window.google?.maps) {
+    if (initial.provider !== "osm" && !process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && !window.google?.maps) {
       setError(
         "Live pins need a website-restricted Google Maps key. See the API setup guide or use demo mode.",
       );
@@ -155,7 +156,7 @@ export function useActivityDiscovery(initial: DiscoveryDefaults = {}) {
     abort.current = controller;
     setBusy(true);
     try {
-      const response = await fetch("/api/discover", {
+      const response = await fetch(initial.provider === "osm" ? "/api/discover/osm" : "/api/discover", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
