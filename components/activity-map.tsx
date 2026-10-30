@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { categories, type Activity } from "@/lib/activities";
 import type { SearchCenter } from "@/lib/discovery";
 import "leaflet/dist/leaflet.css";
@@ -85,18 +85,34 @@ function Recenter({
   return null;
 }
 
+function ReportCenter({ onViewCenterChange }: { onViewCenterChange?: (center: SearchCenter) => void }) {
+  const map = useMapEvents({
+    moveend: () => {
+      const point = map.getCenter();
+      onViewCenterChange?.({ lat: point.lat, lng: point.lng });
+    },
+  });
+  useEffect(() => {
+    const point = map.getCenter();
+    onViewCenterChange?.({ lat: point.lat, lng: point.lng });
+  }, [map, onViewCenterChange]);
+  return null;
+}
+
 export default function ActivityMap({
   activities,
   selection,
   onSelect,
   resetKey,
   center,
+  onViewCenterChange,
 }: {
   activities: Activity[];
   selection: { id: string } | null;
   onSelect: (id: string) => void;
   resetKey: number;
   center: SearchCenter;
+  onViewCenterChange?: (center: SearchCenter) => void;
 }) {
   const [tileError, setTileError] = useState(false);
   return (
@@ -120,6 +136,7 @@ export default function ActivityMap({
           eventHandlers={{ tileerror: () => setTileError(true) }}
         />
         <Recenter resetKey={resetKey} center={center} />
+        <ReportCenter onViewCenterChange={onViewCenterChange} />
         {activities.map((activity) => (
           <ActivityMarker
             key={activity.id}

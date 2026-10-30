@@ -10,11 +10,26 @@ export async function mapFixture(page: Page) {
   // Mock the already-loaded SDK, so no Maps key or paid API request is needed.
   await page.addInitScript(() => {
     class MapFixture {
-      constructor(public container: HTMLElement) {
+      private center: { lat: number; lng: number };
+      private idle = new Set<() => void>();
+      constructor(public container: HTMLElement, options: { center: { lat: number; lng: number } }) {
         container.classList.add("test-google-map");
+        this.center = options.center;
+        container.addEventListener("fixture-pan", ((event: CustomEvent<{ lat: number; lng: number }>) => {
+          this.panTo(event.detail);
+        }) as EventListener);
       }
-      panTo(center: unknown) {
+      panTo(center: { lat: number; lng: number }) {
+        this.center = center;
         this.container.dataset.center = JSON.stringify(center);
+        this.idle.forEach((callback) => callback());
+      }
+      getCenter() {
+        return { lat: () => this.center.lat, lng: () => this.center.lng };
+      }
+      addListener(_name: string, callback: () => void) {
+        this.idle.add(callback);
+        return { remove: () => this.idle.delete(callback) };
       }
     }
     class MarkerFixture {

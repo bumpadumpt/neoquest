@@ -2,7 +2,7 @@
 
 The separate `/map/embed` page contains only a map, optional compact search controls, clickable place details, and a small source/status disclosure. The full `/map` website stays available. Both layouts share the same discovery logic and server endpoint.
 
-The default is a Leaflet demo with fictional Berkeley activities. Real mode uses Google Maps and server-side Places API (New). Loading either mode makes **no Places requests**. Click **Discover Side Quests** to search; filtering displayed pins, selecting pins, panning, and toggling controls do not call Places. Google Maps loads only after a successful real search returns places. Search and map loads are separately metered.
+The default is a Leaflet demo with fictional Berkeley activities. Real mode uses Google Maps and server-side Places API (New). Loading either mode makes **no Places requests**. Click **Discover Side Quests** to search; filtering displayed pins, selecting pins, panning, and toggling controls do not call Places. Google Maps loads only after a successful real search. Search and map loads are separately metered.
 
 ## Customize the URL
 
@@ -27,6 +27,12 @@ Examples after deploying:
 - Dark controls: `https://neoquest-three.vercel.app/map/embed?theme=dark&accent=9ac59e`
 
 Hidden controls can always be reopened with **Search controls**. In live mode, a discovery button remains available even when the toolbar is hidden. No automatic search or location-permission request occurs on iframe load.
+
+### Search the map you are viewing
+
+Drag the map, then press the floating **Search this area** button. It searches around the current map center using your selected category and distance. Distance is the radius selector, not the exact visible rectangle or zoom level. Panning/zooming alone makes no Places requests. The button stays visible with hidden controls and is disabled while a search is in progress. Initial live discovery still requires **Discover Side Quests** before a Google map opens.
+
+Area searches use coordinates directly, avoiding a location-name lookup; the location field changes to **Map area** after a successful search. Successful searches with no matches keep the Google map visible so you can move and search again. In demo mode this button only filters the existing fictional Berkeley samples around the viewed center; it does not find real places or call Google. Existing Google key restrictions and quotas still apply for real searches. This feature does not change `/map/open` or fix community-provider connectivity there.
 
 ## Add to Figma Sites
 

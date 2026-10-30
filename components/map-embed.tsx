@@ -2,11 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useState, type CSSProperties } from "react";
+import { useCallback, useRef, useState, type CSSProperties } from "react";
 import { Compass, LocateFixed, SlidersHorizontal } from "lucide-react";
 import { categories } from "@/lib/activities";
 import { parseMapEmbedOptions, type MapEmbedOptions } from "@/lib/map-embed-options";
 import { useActivityDiscovery } from "@/lib/use-activity-discovery";
+import type { SearchCenter } from "@/lib/discovery";
 
 const ActivityMap = dynamic(() => import("./activity-map"), { ssr: false });
 const GoogleActivityMap = dynamic(() => import("./google-activity-map"), { ssr: false });
@@ -23,10 +24,12 @@ function EmbedContent({ options, liveSupported }: { options: MapEmbedOptions; li
   const [showControls, setShowControls] = useState(options.controls);
   const {
     mode, category, selection, resetKey, location, radius, center, activities,
-    liveResults, searched, busy, locating, error, onSelect, chooseMode,
+    searched, busy, locating, error, onSelect, chooseMode,
     chooseCategory, useCurrentLocation, discover, cancelSearch, setLocation,
     setRadius, setSelection, setResetKey,
   } = useActivityDiscovery(options);
+  const viewCenter = useRef<SearchCenter | null>(null);
+  const reportCenter = useCallback((point: SearchCenter) => { viewCenter.current = point; }, []);
   const foreground = (() => {
     const rgb = options.accent.slice(1).match(/../g)!.map((v) => parseInt(v, 16) / 255);
     return rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114 > 0.55 ? "#111111" : "#ffffff";
@@ -63,9 +66,9 @@ function EmbedContent({ options, liveSupported }: { options: MapEmbedOptions; li
       {error && <div className="embed-error" role="alert"><p>{error}</p>{mode === "live" && <button onClick={() => chooseMode("demo")}>Return to demo mode</button>}</div>}
       <section className="map-pane embed-map" aria-label="Interactive map" aria-busy={busy}>
         {mode === "demo" ? (
-          <ActivityMap activities={activities} selection={selection} onSelect={onSelect} resetKey={resetKey} center={center} />
-        ) : liveResults.length ? (
-          <GoogleActivityMap activities={activities} selection={selection} onSelect={onSelect} resetKey={resetKey} center={center} />
+          <ActivityMap activities={activities} selection={selection} onSelect={onSelect} resetKey={resetKey} center={center} onViewCenterChange={reportCenter} />
+        ) : searched ? (
+          <GoogleActivityMap activities={activities} selection={selection} onSelect={onSelect} resetKey={resetKey} center={center} onViewCenterChange={reportCenter} />
         ) : (
           <div className="map-loading embed-placeholder">
             <Compass size={28} />
@@ -78,7 +81,7 @@ function EmbedContent({ options, liveSupported }: { options: MapEmbedOptions; li
           <button aria-label="Recenter on search location" onClick={() => { setSelection(null); setResetKey((v) => v + 1); }}><LocateFixed size={18} /></button>
           {selection && <button onClick={() => setSelection(null)}>Close place details</button>}
         </div>
-        {mode === "live" && !showControls && liveResults.length > 0 && <button className="embed-refresh embed-discover" disabled={busy} onClick={() => void discover()}>{busy ? "Discovering…" : "Discover Side Quests"}</button>}
+        {(mode === "demo" || searched) && <button className="embed-refresh embed-discover" disabled={busy || locating} onClick={() => void discover(viewCenter.current ?? center)}>{busy ? "Searching this area…" : "Search this area"}</button>}
       </section>
       <footer className="embed-status" aria-live="polite">
         <span>{mode === "demo" ? "Fictional sample activities · Berkeley" : "Places from Google · Ratings only when provided"}</span>
