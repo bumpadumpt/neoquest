@@ -85,3 +85,42 @@ test("embed fits a parent iframe and preserves map attribution", async ({ page }
   expect(box!.height).toBeCloseTo(500, 1);
   expect(await frame.locator("body").evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight)).toBe(true);
 });
+
+test("search this area uses the panned Google center and current preferences, and keeps an empty map searchable", async ({ page }) => {
+  const requests: Record<string, unknown>[] = [];
+  await page.route("**/api/discover", (route) => {
+    const body = route.request().postDataJSON();
+    requests.push(body);
+    return route.fulfill({ json: { center: body.center ?? { lat: 37.8716, lng: -122.2727 }, locationLabel: "Your search location", activities: [] } });
+  });
+  await page.goto("/map/embed?mode=live&controls=hidden&category=cafe&radius=1000");
+  await page.getByRole("button", { name: "Discover Side Quests" }).click();
+  await expect(page.locator(".test-google-map")).toHaveCount(1);
+  const point = { lat: 37.8, lng: -122.4 };
+  await page.locator(".test-google-map").evaluate((el, center) => el.dispatchEvent(new CustomEvent("fixture-pan", { detail: center })), point);
+  expect(requests).toHaveLength(1);
+  await page.getByRole("button", { name: "Search this area", exact: true }).click();
+  await expect.poll(() => requests.length).toBe(2);
+  expect(requests[1]).toEqual({ center: point, category: "cafe", radius: 1000 });
+  await expect(page.locator(".test-google-map")).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "Search this area", exact: true })).toBeEnabled();
+  await page.getByRole("button", { name: "Show search controls" }).click();
+  await expect(page.getByLabel("Search near")).toHaveValue("Map area");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("demo area searches stay local when the Leaflet map is dragged", async ({ page }) => {
+  let calls = 0;
+  page.on("request", (request) => { if (request.url().includes("/api/discover")) calls++; });
+  await page.goto("/map/embed?controls=hidden&radius=1000");
+  await expect(page.locator(".leaflet-marker-icon")).toHaveCount(12);
+  const box = (await page.locator(".leaflet-container").boundingBox())!;
+  await page.mouse.move(box.x + box.width * 0.4, box.y + box.height * 0.6);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.4 + 100, box.y + box.height * 0.6, { steps: 15 });
+  await page.mouse.up();
+  await page.getByRole("button", { name: "Search this area", exact: true }).click();
+  await expect(page.locator(".embed-status")).toContainText("Fictional sample activities");
+  expect(await page.locator(".leaflet-marker-icon").count()).toBeLessThan(12);
+  expect(calls).toBe(0);
+});

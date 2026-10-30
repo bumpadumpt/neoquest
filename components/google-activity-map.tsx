@@ -12,17 +12,29 @@ export default function GoogleActivityMap({
   selection,
   onSelect,
   resetKey,
+  onViewCenterChange,
 }: {
   activities: Activity[];
   center: SearchCenter;
   selection: { id: string } | null;
   onSelect: (id: string) => void;
   resetKey: number;
+  onViewCenterChange?: (center: SearchCenter) => void;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [error, setError] = useState("");
   const selected = activities.find((a) => a.id === selection?.id);
+  useEffect(() => {
+    if (!map || !onViewCenterChange) return;
+    const report = () => {
+      const point = map.getCenter();
+      if (point) onViewCenterChange({ lat: point.lat(), lng: point.lng() });
+    };
+    report();
+    const listener = map.addListener("idle", report);
+    return () => listener.remove();
+  }, [map, onViewCenterChange]);
   useEffect(() => {
     let cancelled = false;
     loadGoogleMap()

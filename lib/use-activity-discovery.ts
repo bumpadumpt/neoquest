@@ -8,7 +8,7 @@ import {
   type Activity,
   type Category,
 } from "@/lib/activities";
-import { distanceMeters, type SearchCenter } from "@/lib/discovery";
+import { distanceMeters, validCenter, type SearchCenter } from "@/lib/discovery";
 
 export type DiscoveryDefaults = {
   provider?: "google" | "osm";
@@ -110,17 +110,21 @@ export function useActivityDiscovery(initial: DiscoveryDefaults = {}) {
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 },
     );
   }
-  async function discover() {
+  async function discover(mapCenter?: SearchCenter) {
     cancelSearch();
     setError("");
     setSelection(null);
-    const input = location.trim();
+    if (mapCenter !== undefined && !validCenter(mapCenter)) {
+      setError("The map location is unavailable. Try moving the map again.");
+      return;
+    }
+    const input = mapCenter ? "Map area" : location.trim();
     if (!input) {
       setError("Enter a city or address, or use your current location.");
       return;
     }
-    const knownCenter =
-      resolvedLocation.input === input ? resolvedLocation.center : undefined;
+    const knownCenter = mapCenter ??
+      (resolvedLocation.input === input ? resolvedLocation.center : undefined);
     if (mode === "demo") {
       const nextCenter =
         knownCenter ?? (/berkeley/i.test(input) ? berkeley : undefined);
@@ -132,6 +136,10 @@ export function useActivityDiscovery(initial: DiscoveryDefaults = {}) {
       }
       setCenter(nextCenter);
       setLocationLabel(input);
+      if (mapCenter) {
+        setLocation(input);
+        setResolvedLocation({ input, center: nextCenter });
+      }
       setDemoResults(
         sampleActivities.filter(
           (a) =>
@@ -173,6 +181,7 @@ export function useActivityDiscovery(initial: DiscoveryDefaults = {}) {
         );
       if (id !== requestId.current) return;
       setLiveResults(data.activities);
+      if (mapCenter) setLocation(input);
       setCenter(data.center);
       setResolvedLocation({ input, center: data.center });
       setLocationLabel(
